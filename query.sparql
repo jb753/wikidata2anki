@@ -1,0 +1,35 @@
+# British PMs by dates
+# Deal with floor-crossers by sampling ?party
+SELECT DISTINCT ?personLabel ?start ?end ?preLabel ?sucLabel (sample(?pic) as ?pic) (sample(?party) as ?party) (sample(?partycol) as ?partycol)WHERE {
+
+  # Enable English language labels
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+
+  # Get people that have held a position and have a party affiliation
+  ?person p:P39 ?posheld; # Store position 
+          p:P102 ?partystatement; # Store party 
+          wdt:P18 ?pic. # Store party 
+
+  # Check details of the position
+  ?posheld ps:P39 wd:Q14211; # Position is British PM
+           pq:P580 ?start.  # Get start date of this position
+    
+  # Preceeded by, succeeded by, end date
+  # Optional so as to not rule out Walpole or Boris
+  OPTIONAL { ?posheld pq:P1365 ?pre }
+  OPTIONAL { ?posheld pq:P1366 ?suc }
+  OPTIONAL { ?posheld pq:P582 ?end }
+
+  # Extract party name
+  # We have to get label explicitly because sample directive does not work with
+  # the implicit ?partyLabel variable name
+  ?person wdt:P102 ?partyst.
+  ?partyst rdfs:label ?party.
+  FILTER (langMatches( lang(?party), "EN" ) ) 
+
+  # Extract party colour Hex code
+  ?partyst wdt:P465 ?partycol.
+
+}
+GROUP BY ?personLabel ?start ?end ?pcol ?preLabel ?sucLabel
+ORDER BY ?start
