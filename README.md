@@ -26,4 +26,4 @@ python wikidata2anki.py Q14211
 
 with a typical result,
 
-![](example.png)
+<img src="example.png" width="400">
