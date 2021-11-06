@@ -1,4 +1,3 @@
-# Query file to return British PMs by date
 SELECT DISTINCT
   ?personLabel  # Name
   ?start  # Start of term
@@ -19,7 +18,7 @@ WHERE {
           wdt:P102 ?partyst.  # Return political party
 
   # Check details of the position
-  ?posheld ps:P39 wd:POSID;  # Position must be British PM
+  ?posheld ps:P39 wd:POSID;  # Position must be as specified
            pq:P580 ?start.  # Get start date of matched position
 
   # Preceeded by, succeeded by, end date
