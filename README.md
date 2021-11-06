@@ -9,13 +9,19 @@ See [this blog post](https://jb753.user.srcf.net/anki2wikidata) for a fuller
 exposition.
 
 Requirements:
-```pip install sparqlwrapper genanki```
+```
+pip install sparqlwrapper genanki
+```
 
 Usage:
-```python wikidata2anki.py OFFICE_ITEM_ID```
+```
+python wikidata2anki.py OFFICE_ITEM_ID
+```
 
 For example, to generate a deck of British Prime Ministers,
 
-```python wikidata2anki.py Q14211```
+```
+python wikidata2anki.py Q14211
+```
 
 ![](example.png)
