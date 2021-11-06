@@ -1,4 +1,5 @@
 """Generate Anki flashcards for British Prime Ministers using WikiData.
+
 James Brind, October 2021"""
 
 import sys
@@ -19,6 +20,9 @@ IMGDIR = "./img"  # Relative path to store images
 with open(QUERY_FILE, "r") as f:
     query_str = f.read()
 
+# Use command line argument for the office id
+query_str = query_str.replace('POSID',sys.argv[1])
+
 # Send to remote and get results
 # After the WikiData Query Service example script.
 sparql = SPARQLWrapper(ENDPOINT_URL, agent=USER_AGENT)
@@ -29,6 +33,10 @@ results = sparql.query().convert()
 # Throw away metadata and just keep values
 results = results["results"]["bindings"]
 results = [{ki: ri[ki]["value"] for ki in ri} for ri in results]
+
+# Print the names
+for ri in results:
+    print(ri["personLabel"])
 
 # Now loop over results and manipulate the data as required
 for ri in results:

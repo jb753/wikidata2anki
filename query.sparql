@@ -1,31 +1,38 @@
-# British PMs by dates
-# Deal with floor-crossers by sampling ?party
-SELECT DISTINCT ?personLabel ?start ?end ?preLabel ?sucLabel (sample(?pic) as ?pic) (sample(?party) as ?party) (sample(?partycol) as ?partycol)WHERE {
+# Query file to return British PMs by date
+SELECT DISTINCT
+  ?personLabel  # Name
+  ?start  # Start of term
+  ?end  # End of term
+  ?preLabel  # Name of predecessor
+  ?sucLabel  # Name of successor  
+  (SAMPLE(?pic) as ?pic)  # Choose one picture
+  (SAMPLE(?party) as ?party)  # Choose one party to deal with floor-crossers
+  (SAMPLE(?partycol) as ?partycol)  # Some parties have changes colour
+WHERE {
 
   # Enable English language labels
   SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 
-  # Get people that have held a position and have a party affiliation
-  ?person p:P39 ?posheld; # Store position 
-          p:P102 ?partystatement; # Store party 
-          wdt:P18 ?pic. # Store party 
+  # Get people that have held any position, save picture and party affiliation
+  ?person p:P39 ?posheld;  # Store position for later examination
+          wdt:P18 ?pic;  # Return picture 
+          wdt:P102 ?partyst.  # Return political party
 
   # Check details of the position
-  ?posheld ps:P39 wd:Q14211; # Position is British PM
-           pq:P580 ?start.  # Get start date of this position
-    
+  ?posheld ps:P39 wd:POSID;  # Position must be British PM
+           pq:P580 ?start.  # Get start date of matched position
+
   # Preceeded by, succeeded by, end date
   # Optional so as to not rule out Walpole or Boris
   OPTIONAL { ?posheld pq:P1365 ?pre }
   OPTIONAL { ?posheld pq:P1366 ?suc }
   OPTIONAL { ?posheld pq:P582 ?end }
 
-  # Extract party name
-  # We have to get label explicitly because sample directive does not work with
-  # the implicit ?partyLabel variable name
-  ?person wdt:P102 ?partyst.
+  # We have to get party label explicitly because the SAMPLE directive does 
+  # not work with an implicit ?...Label variable name
+  # rdfs: is a special prefix to get labels manually
   ?partyst rdfs:label ?party.
-  FILTER (langMatches( lang(?party), "EN" ) ) 
+  FILTER (langMatches( lang(?party), "EN" ) )  # Only the English label
 
   # Extract party colour Hex code
   ?partyst wdt:P465 ?partycol.
