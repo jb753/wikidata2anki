@@ -5,8 +5,8 @@ to find all persons that have held a certain political office, e.g. British
 Prime Minister `Q14211`, and generates a deck of
 [Anki](https://apps.ankiweb.net/) flashcards.
 
-See [this blog post](https://jb753.user.srcf.net/wikidata2anki) for a fuller
-exposition.
+See [this blog post](https://jb753.user.srcf.net/posts/wikidata2anki) for a
+fuller exposition.
 
 Requirements:
 ```
