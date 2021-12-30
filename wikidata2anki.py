@@ -85,6 +85,15 @@ for ri in results:
     else:
         ri["others"] = ""
 
+# Warning: ugly hack
+# Gladstone started as a Peelite Tory before crossing the floor, and was a
+# Liberal for all his terms. If I was better at SPARQL, I could look up the
+# relevent party affiliation by date of the term of office. Instead, manually
+# correct this error.
+for ri in results:
+    if "Gladstone" in ri["personLabel"]:
+        ri["party"] = "Liberal Party"
+
 # Hardcode randomly-generated identifiers
 MODEL_ID = 1246910694
 DECK_ID = 1590691877
