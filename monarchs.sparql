@@ -1,0 +1,46 @@
+SELECT DISTINCT
+  ?personLabel  # Name
+  ?start  # Start of term
+  ?end  # End of term
+  ?preLabel  # Name of predecessor
+  ?sucLabel  # Name of successor  
+  (SAMPLE(?pic) as ?pic)  # Choose one picture
+  (SAMPLE(?party) as ?party)  # Choose one party to deal with floor-crossers
+WHERE {
+
+  # Enable English language labels
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+
+  # Get people that have held any position, save picture and party affiliation
+  ?person p:P39 ?posheld;  # Store position for later examination
+          wdt:P18 ?pic;  # Return picture 
+          wdt:P53 ?partyst.  # Return political party
+
+  # Check details of the position
+  { ?posheld  ps:P39 wd:Q18810062 }   # Monarch of England
+  UNION { ?posheld  ps:P39 wd:Q9134365 } # Monarch of UK
+  UNION { ?posheld ps:P39 wd:Q110324075  } # Monarch of Great Britain
+  UNION { ?posheld ps:P39 wd:Q12097 ; pq:P642 wd:Q174193} # A king *of* UK
+  UNION { ?posheld ps:P39 wd:Q116 ; pq:P642 wd:Q174193} # A monarch *of* UK
+  #UNION { ?posheld ps:P39 wd:Q116 ; pq:P1001 wd:Q179876} # A monarch *of* England
+
+  # Preceeded by, succeeded by, end date
+  # Optional so as to not rule out Walpole or Boris
+  { ?posheld pq:P580 ?start }
+  OPTIONAL { ?posheld pq:P1365 ?pre }
+  OPTIONAL { ?posheld pq:P1366 ?suc }
+  OPTIONAL { ?posheld pq:P582 ?end }
+
+  # We have to get party label explicitly because the SAMPLE directive does 
+  # not work with an implicit ?...Label variable name
+  # rdfs: is a special prefix to get labels manually
+  ?partyst rdfs:label ?party.
+  FILTER (langMatches( lang(?party), "EN" ) )  # Only the English label
+
+  # Extract party colour Hex code
+  # ?partyst wdt:P465 ?partycol.
+
+  FILTER (YEAR(?start) > 1065)  
+}
+GROUP BY ?personLabel ?start ?end ?preLabel ?sucLabel
+ORDER BY ?start
